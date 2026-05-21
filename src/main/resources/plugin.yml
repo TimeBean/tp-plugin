@@ -1,0 +1,44 @@
+name: TeleportPlugin
+version: '${project.version}'
+main: dev.tpplugin.TeleportPlugin
+api-version: '1.21'
+description: Custom teleport commands with permissions
+authors: [ ]
+
+commands:
+  tp:
+    description: "Teleport to coords (/tp x y z) or force-move a player (/tp p1 p2)"
+    usage: "/tp <x> <y> <z>  |  /tp <игрок1> <игрок2>"
+    permission-message: "&cУ вас нет прав для использования этой команды!"
+  tps:
+    description: Teleport yourself to a player
+    usage: /tps <игрок>
+    permission: tpplugin.tp.player
+    permission-message: "&cУ вас нет прав для использования этой команды!"
+  tpss:
+    description: Pull a player to yourself
+    usage: /tpss <игрок>
+    permission: tpplugin.tp.pull
+    permission-message: "&cУ вас нет прав для использования этой команды!"
+
+permissions:
+  tpplugin.tp.coords:
+    description: "/tp <x> <y> <z> - телепортация себя по координатам"
+    default: op
+  tpplugin.tp.player:
+    description: "/tps <игрок> - телепортация себя к игроку"
+    default: op
+  tpplugin.tp.force:
+    description: "/tp <игрок1> <игрок2> - телепортация чужого игрока к другому"
+    default: op
+  tpplugin.tp.pull:
+    description: "/tpss <игрок> - притянуть игрока к себе"
+    default: op
+  tpplugin.tp.*:
+    description: Все права на телепортацию
+    default: op
+    children:
+      tpplugin.tp.coords: true
+      tpplugin.tp.player: true
+      tpplugin.tp.force: true
+      tpplugin.tp.pull: true
