@@ -11,16 +11,19 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
-public class TpssCommand implements CommandExecutor, TabCompleter {
+/**
+ * /tpp (tpplayer) <игрок> — телепортация себя к указанному игроку.
+ * Алиас: tpplayer
+ * Пермишн: tpplugin.tp.player
+ */
+public class TppCommand implements CommandExecutor, TabCompleter {
 
-    /** Притянуть другого игрока к себе */
-    private static final String PERMISSION = "tpplugin.tp.pull";
+    private static final String PERMISSION = "tpplugin.tp.player";
 
     private final TeleportPlugin plugin;
 
-    public TpssCommand(TeleportPlugin plugin) {
+    public TppCommand(TeleportPlugin plugin) {
         this.plugin = plugin;
     }
 
@@ -31,26 +34,25 @@ public class TpssCommand implements CommandExecutor, TabCompleter {
             @NotNull String label,
             @NotNull String[] args
     ) {
-        // Только игроки: нужно знать «к себе» — то есть к позиции исполнителя
         if (!(sender instanceof Player player)) {
             sender.sendMessage("§cЭта команда доступна только для игроков!");
             return true;
         }
 
         if (!player.hasPermission(PERMISSION)) {
-            player.sendMessage("§cУ вас нет прав для притягивания игроков к себе!");
+            player.sendMessage("§cУ вас нет прав для использования этой команды!");
             return true;
         }
 
         if (args.length != 1) {
-            player.sendMessage("§eИспользование: §f/tpss <игрок>");
+            player.sendMessage("§eИспользование: §f/tpp <игрок>");
             return true;
         }
 
         String targetName = args[0];
 
         if (targetName.equalsIgnoreCase(player.getName())) {
-            player.sendMessage("§cНельзя притянуть самого себя!");
+            player.sendMessage("§cВы не можете телепортироваться к себе!");
             return true;
         }
 
@@ -61,10 +63,9 @@ public class TpssCommand implements CommandExecutor, TabCompleter {
             return true;
         }
 
-        target.teleport(player.getLocation());
-
-        target.sendMessage("§aВас телепортировали к §f" + player.getName() + "§a.");
-        player.sendMessage("§aИгрок §f" + target.getName() + " §aпритянут к вам.");
+        player.teleport(target.getLocation());
+        player.sendMessage("§aТелепортация к игроку §f" + target.getName() + "§a!");
+        target.sendMessage("§7К вам телепортировался §f" + player.getName() + "§7.");
 
         return true;
     }
@@ -84,9 +85,9 @@ public class TpssCommand implements CommandExecutor, TabCompleter {
             String prefix = args[0].toLowerCase();
             return Bukkit.getOnlinePlayers().stream()
                     .map(Player::getName)
-                    .filter(n -> n.toLowerCase().startsWith(prefix))
-                    .filter(n -> !n.equalsIgnoreCase(player.getName()))
-                    .collect(Collectors.toList());
+                    .filter(name -> name.toLowerCase().startsWith(prefix))
+                    .filter(name -> !name.equalsIgnoreCase(player.getName()))
+                    .toList();
         }
 
         return Collections.emptyList();
